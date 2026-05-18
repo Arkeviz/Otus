@@ -1,0 +1,19 @@
+{
+  "name": "otus-qa-project",
+  "type": "module",
+  "version": "0.0.1",
+  "private": true,
+  "author": "Aleksei Koposov",
+  "license": "ISC",
+  "main": "src/main.js",
+  "scripts": {
+    "start": "node src/main.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "lint:ci": "eslint ."
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^9.0.0",
+    "eslint": "^10.3.0"
+  }
+}
