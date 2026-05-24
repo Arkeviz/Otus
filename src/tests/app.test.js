@@ -32,7 +32,7 @@ describe('app.js', () => {
       ['цена: 10, кол-во: 10, итого: 100', [{ price: 10, quantity: 10 }], 0, 100],
       ['цена: 10, кол-во: 1, итого: 10', [{ price: 10, quantity: 1 }], 0, 10],
       ['2 товара, итого: 100', [{ price: 10, quantity: 1 }, { price: 10, quantity: 9 }], 0, 100],
-      ['цена: 10, кол-во: 10, скидка: 10 итого: 100', [{ price: 10, quantity: 10 }], 10, 90],
+      ['цена: 10, кол-во: 10, скидка: 10 итого: 90', [{ price: 10, quantity: 10 }], 10, 90],
     ])('%s', ([_, items, discount, res]) => {
       expect(getTotal(items, discount)).toBe(res)
     })
