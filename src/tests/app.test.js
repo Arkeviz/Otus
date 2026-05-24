@@ -50,5 +50,12 @@ describe('app.js', () => {
           { price: 10, quantity: 10 },
         )).toThrow()
     })
+    // FIXME Ожидаемо, тест упадёт,
+    //  т.к. NaN обойдёт проверки и никаких ошибок не вылетит
+    it('ошибка при передаче NaN в скидку', () => {
+      expect(
+        getTotal([{ price: 10, quantity: 1 }], Number.NaN),
+      ).not.toBeNaN()
+    })
   })
 })
