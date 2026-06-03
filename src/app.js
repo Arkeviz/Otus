@@ -51,7 +51,7 @@ export function getTotal(items = [], discount = 0) {
  * }
  * getScore(scores) // 16
  */
-function getScore(obj) {
+export function getScore(obj) {
   let score = 0
   for (const key in obj) {
     score += +obj[key]
