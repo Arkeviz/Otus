@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { fullTrim, getTotal, nameIsValid } from '../app.js'
 
-describe('app.js', () => {
+describe('app.js', { tags: ['Задание-5'] }, () => {
   describe('nameIsValid', () => {
     it.for([
       ['имя кириллицей с большой буквы', 'Алексей', false],
@@ -52,10 +52,10 @@ describe('app.js', () => {
     })
     // FIXME Ожидаемо, тест упадёт,
     //  т.к. NaN обойдёт проверки и никаких ошибок не вылетит
-    it('ошибка при передаче NaN в скидку', () => {
-      // expect(
-      //   getTotal([{ price: 10, quantity: 1 }], Number.NaN),
-      // ).not.toBeNaN()
+    it.skip('ошибка при передаче NaN в скидку', () => {
+      expect(
+        getTotal([{ price: 10, quantity: 1 }], Number.NaN),
+      ).not.toBeNaN()
     })
   })
 })
