@@ -8,7 +8,11 @@ git clone https://github.com/Arkeviz/Otus.git
 npm ci
 ```
 ## Команды
-Запуска проекта
+Запуск тестов
+```shell
+npm run test:run
+```
+Запуск `main.js`
 ```shell
 npm run start
 ```
@@ -18,5 +22,7 @@ npm run lint:fix
 ```
 
 ## Используемые технологии
-- eslint (конфиг [Anthony Fu](https://github.com/antfu/eslint-config))
-- ...TBA
+- [Vite](https://vite.dev/)
+- [Vitest](https://vitest.dev/)
+- [ofetch](https://github.com/unjs/ofetch)
+- ESLint (конфиг [Anthony Fu](https://github.com/antfu/eslint-config))
