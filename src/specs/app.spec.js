@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { fullTrim, getTotal, nameIsValid } from '../app.js'
 
-describe('app.js', { tags: ['Задание-5'] }, () => {
+describe('app.js', { tags: ['Task-5'] }, () => {
   describe('nameIsValid', () => {
     it.for([
       ['имя кириллицей с большой буквы', 'Алексей', false],

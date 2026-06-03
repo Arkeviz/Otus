@@ -8,7 +8,7 @@ const instance = ofetch.create({
   ignoreResponseError: true,
 })
 
-describe('api.spec.js', { tags: ['Задание-6'] }, () => {
+describe('api.spec.js', { tags: ['Task-6'] }, () => {
   // Каждый раз при запуске теста создаётся новый пользователь,
   // который используется в последующих тестах
   // и удаляется по их окончании

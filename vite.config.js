@@ -8,15 +8,15 @@ export default defineConfig({
     globals: true,
     tags: [
       {
-        name: 'Задание-5',
+        name: 'Task-5',
         description: 'Unit-тесты обычных функций',
       },
       {
-        name: 'Задание-6',
+        name: 'Task-6',
         description: 'Unit-тесты API',
       },
       {
-        name: 'Задание-8',
+        name: 'Task-8',
         description: 'Unit-тесты API',
       },
     ],
