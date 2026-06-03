@@ -16,5 +16,8 @@
     "@antfu/eslint-config": "^9.0.0",
     "eslint": "^10.3.0",
     "vitest": "^4.1.7"
+  },
+  "dependencies": {
+    "ofetch": "^1.5.1"
   }
 }
