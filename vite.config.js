@@ -1,3 +1,4 @@
+import { fileURLToPath, URL } from 'node:url'
 /// <reference types="vitest/config" />
 import { defineConfig } from 'vite'
 
@@ -5,7 +6,7 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   test: {
     /* for example, use global to avoid globals imports (describe, test, expect): */
-    globals: true,
+    globals: false,
     tags: [
       {
         name: 'Task-5',
@@ -20,5 +21,12 @@ export default defineConfig({
         description: 'Unit-тесты API',
       },
     ],
+  },
+
+  // https://vitejs.dev/config/shared-options.html#resolve-alias
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+    },
   },
 })

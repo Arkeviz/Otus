@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { fullTrim, getTotal, nameIsValid } from '../app.js'
+import { fullTrim, getTotal, nameIsValid } from '@/app.js'
 
 describe('app.js', { tags: ['Task-5'] }, () => {
   describe('nameIsValid', () => {
