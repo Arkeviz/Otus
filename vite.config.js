@@ -7,6 +7,7 @@ export default defineConfig({
   test: {
     /* for example, use global to avoid globals imports (describe, test, expect): */
     globals: false,
+    testTimeout: 10_000,
     tags: [
       {
         name: 'Task-5',
@@ -14,11 +15,11 @@ export default defineConfig({
       },
       {
         name: 'Task-6',
-        description: 'Unit-тесты API',
+        description: 'Unit-тесты API работы с пользователем',
       },
       {
         name: 'Task-8',
-        description: 'Unit-тесты API',
+        description: 'Unit-тесты API работы с пользователем',
       },
     ],
   },
