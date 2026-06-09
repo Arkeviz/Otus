@@ -21,6 +21,10 @@ export default defineConfig({
         name: 'Task-8',
         description: 'Unit-тесты API работы с пользователем',
       },
+      {
+        name: 'Task-9',
+        description: 'Unit-тесты API работы с книгами',
+      },
     ],
   },
 
