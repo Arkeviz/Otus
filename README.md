@@ -25,4 +25,5 @@ npm run lint:fix
 - [Vite](https://vite.dev/)
 - [Vitest](https://vitest.dev/)
 - [ofetch](https://github.com/unjs/ofetch)
+- [faker-js](https://fakerjs.dev/)
 - ESLint (конфиг [Anthony Fu](https://github.com/antfu/eslint-config))

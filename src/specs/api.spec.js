@@ -1,8 +1,13 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
-import { generateUserCredentials } from '@/framework/fixtures/generateUserCredentials.js'
+import {
+  createAuthenticatedUser,
+  createTestUser,
+  deleteTestUser,
+  generateUserCredentials,
+} from '@/framework/fixtures/boorkstoreUser.js'
 import { booksStoreService } from '@/framework/services/booksStoreService.js'
 
-describe('bookstore API', { tags: ['Task-6', 'Task-8'] }, () => {
+describe('bookstore Account API', { tags: ['Task-6', 'Task-8'] }, () => {
   // Каждый раз при запуске тестов создаётся новый пользователь,
   // который используется в последующих тестах
   // и удаляется по их окончании
@@ -10,19 +15,12 @@ describe('bookstore API', { tags: ['Task-6', 'Task-8'] }, () => {
   let sharedToken
 
   beforeAll(async () => {
-    const credentials = generateUserCredentials()
-    const { _data: user } = await booksStoreService.userController.createUser(credentials)
-    // FIXME: Swagger описывает поле как `userId`, но API возвращает `userID`
-    sharedUser = { userId: user.userID, userName: credentials.userName, password: credentials.password }
-    const { _data: tokenData } = await booksStoreService.userController.generateToken(
-      { userName: sharedUser.userName, password: sharedUser.password },
-    )
-    sharedToken = tokenData.token
+    const userWithToken = await createAuthenticatedUser()
+    sharedUser = userWithToken.user
+    sharedToken = userWithToken.token
   })
   afterAll(async () => {
-    await booksStoreService.userController.deleteUser(sharedUser.userId, {
-      headers: { Authorization: `Bearer ${sharedToken}` },
-    })
+    await deleteTestUser(sharedUser.userId, sharedToken)
   })
 
   describe('/User - создание пользователя', () => {
@@ -126,9 +124,7 @@ describe('bookstore API', { tags: ['Task-6', 'Task-8'] }, () => {
 
     beforeAll(async () => {
       // Создаём пользователя БЕЗ вызова GenerateToken - он не авторизован
-      const credentials = generateUserCredentials()
-      const { _data: user } = await booksStoreService.userController.createUser(credentials)
-      localUser = { userId: user.userID, userName: user.username, password: credentials.password }
+      localUser = await createTestUser()
     })
 
     afterAll(async () => {
@@ -139,9 +135,7 @@ describe('bookstore API', { tags: ['Task-6', 'Task-8'] }, () => {
         )
       }
 
-      await booksStoreService.userController.deleteUser(localUser.userId, {
-        headers: { Authorization: `Bearer ${localToken}` },
-      })
+      await deleteTestUser(localUser.userId, localToken)
     })
 
     it('возвращает 400 (code: "1200") при отсутствии тела запроса', async () => {
@@ -184,22 +178,12 @@ describe('bookstore API', { tags: ['Task-6', 'Task-8'] }, () => {
     let localToken
 
     beforeAll(async () => {
-      // Создаём пользователя + токен
-      const credentials = generateUserCredentials()
-      const { _data: user } = await booksStoreService.userController.createUser(credentials)
-      localUser = { userId: user.userID, userName: user.username, password: credentials.password }
-
-      const tokenData = await booksStoreService.userController.generateToken(
-        { userName: localUser.userName, password: localUser.password },
-      )
-      localToken = tokenData._data.token
+      const userWithToken = await createAuthenticatedUser()
+      localUser = userWithToken.user
+      localToken = userWithToken.token
     })
-
     afterAll(async () => {
-      // Если тест успешного удаления упал - удаляем вручную
-      await booksStoreService.userController.deleteUser(localUser.userId, {
-        headers: { Authorization: `Bearer ${localToken}` },
-      })
+      await deleteTestUser(localUser.userId, localToken)
     })
 
     it('возвращает 401 (code: "1200") без токена авторизации', async () => {
@@ -226,7 +210,7 @@ describe('bookstore API', { tags: ['Task-6', 'Task-8'] }, () => {
 
     // FIXME возввращает 200 с телом `{ code: '1207', message: 'User Id not correct!' }`
     //  Получается, даже токен удалённого юзера не стух... ужас :D
-    // Пока скипаю
+    //  Пока скипаю данный тест
     it.skip('возвращает 401 при попытке удалить уже удалённого пользователя', async () => {
       // После удаления токен инвалидируется
       const res = await booksStoreService.userController.deleteUser(localUser.userId, {
