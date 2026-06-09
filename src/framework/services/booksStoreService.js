@@ -122,7 +122,7 @@ export const booksStoreService = {
       '/BookStore/v1/Books',
       {
         method: 'DELETE',
-        query: { userId },
+        query: { UserId: userId },
         ...options,
       },
     ),
