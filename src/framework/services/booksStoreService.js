@@ -76,4 +76,55 @@ export const booksStoreService = {
       },
     ),
   },
+
+  booksController: {
+    /**
+     * Получает все книги
+     * @param options
+     */
+    getBooks: (options = {}) => instance.raw('/BookStore/v1/Books', options),
+
+    /**
+     * Добавляет книгу пользователю
+     * @param {{ userId: string, collectionOfIsbns: Array<{ isbn: string }> }} books
+     * @param options
+     */
+    addBooks: (books, options = {}) => instance.raw(
+      '/BookStore/v1/Books',
+      {
+        method: 'POST',
+        body: books,
+        ...options,
+      },
+    ),
+
+    /**
+     * Заменяет книгу у пользователя
+     * @param {string} oldisbn
+     * @param {{ userId: string, isbn: string }} params
+     * @param options
+     */
+    updateBooks: (oldisbn, params, options = {}) => instance.raw(
+      `/BookStore/v1/Books/${oldisbn}`,
+      {
+        method: 'PUT',
+        body: params,
+        ...options,
+      },
+    ),
+
+    /**
+     * Удаление книг у пользователя
+     * @param {number} userId
+     * @param options
+     */
+    deleteBooks: (userId, options = {}) => instance.raw(
+      '/BookStore/v1/Books',
+      {
+        method: 'DELETE',
+        query: { userId },
+        ...options,
+      },
+    ),
+  },
 }
