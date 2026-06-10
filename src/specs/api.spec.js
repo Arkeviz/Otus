@@ -5,8 +5,8 @@ import {
   createTestUser,
   deleteTestUser,
   generateUserCredentials,
-} from '@/framework/fixtures/boorkstoreUser.js'
-import { booksStoreService } from '@/framework/services/booksStoreService.js'
+} from '@/framework/fixtures/bookStoreUser.js'
+import { bookStoreService } from '@/framework/services/bookStoreService.js'
 
 describe('bookstore Account API', { tags: ['Task-6', 'Task-8'] }, () => {
   // Каждый раз при запуске тестов создаётся новый пользователь,
@@ -25,8 +25,8 @@ describe('bookstore Account API', { tags: ['Task-6', 'Task-8'] }, () => {
   })
 
   describe('[POST] /User - создание пользователя', () => {
-    it('возвращает 400 при невалидном пароле', async () => {
-      const res = await booksStoreService.userController.createUser(
+    it.concurrent('возвращает 400 при невалидном пароле', async () => {
+      const res = await bookStoreService.userController.createUser(
         generateUserCredentials(null, '1234567890!'),
       )
 
@@ -36,26 +36,26 @@ describe('bookstore Account API', { tags: ['Task-6', 'Task-8'] }, () => {
 
     it('возвращает 201 и userId при корректных данных', async () => {
       const user = generateUserCredentials()
-      const res = await booksStoreService.userController.createUser(user)
+      const res = await bookStoreService.userController.createUser(user)
 
       expect(res.status).toBe(201)
       // FIXME: Swagger описывает поле как `userId`, но API возвращает `userID`
       expect(res._data).toHaveProperty('userID')
 
       // Чистим созданного пользователя
-      const { _data: tokenData } = await booksStoreService.userController.generateToken(
+      const { _data: tokenData } = await bookStoreService.userController.generateToken(
         {
           userName: user.userName,
           password: user.password,
         },
       )
-      await booksStoreService.userController.deleteUser(res._data.userID, {
+      await bookStoreService.userController.deleteUser(res._data.userID, {
         headers: { Authorization: `Bearer ${tokenData.token}` },
       })
     })
 
     it('возвращает 406 (code: "1204") при повторном использовании логина', async () => {
-      const res = await booksStoreService.userController.createUser(
+      const res = await bookStoreService.userController.createUser(
         { userName: sharedUser.userName, password: sharedUser.password },
       )
 
@@ -64,9 +64,9 @@ describe('bookstore Account API', { tags: ['Task-6', 'Task-8'] }, () => {
     })
   })
 
-  describe('[POST] /GenerateToken - генерация токена', () => {
+  describe.concurrent('[POST] /GenerateToken - генерация токена', () => {
     it('возвращает статус `Failed` при неверном пароле', async () => {
-      const res = await booksStoreService.userController.generateToken({
+      const res = await bookStoreService.userController.generateToken({
         userName: sharedUser.userName,
         password: sharedUser.password.slice(0, -1),
       })
@@ -76,7 +76,7 @@ describe('bookstore Account API', { tags: ['Task-6', 'Task-8'] }, () => {
     })
 
     it('возвращает токен при верных учётных данных', async () => {
-      const res = await booksStoreService.userController.generateToken({
+      const res = await bookStoreService.userController.generateToken({
         userName: sharedUser.userName,
         password: sharedUser.password,
       })
@@ -88,15 +88,15 @@ describe('bookstore Account API', { tags: ['Task-6', 'Task-8'] }, () => {
     })
   })
 
-  describe('[GET] /User/{UUID} - получение информации о пользователе', () => {
+  describe.concurrent('[GET] /User/{UUID} - получение информации о пользователе', () => {
     it('возвращает 401 (code: "1200") без токена авторизации', async () => {
-      const res = await booksStoreService.userController.getUser(sharedUser.userId)
+      const res = await bookStoreService.userController.getUser(sharedUser.userId)
       expect(res.status).toBe(401)
       expect(res._data).toHaveProperty('code', '1200')
     })
 
     it('возвращает 401 (code: "1200") с невалидным токеном', async () => {
-      const res = await booksStoreService.userController.getUser(
+      const res = await bookStoreService.userController.getUser(
         sharedUser.userId,
         {
           headers: { Authorization: 'Bearer mr-invalid-token' },
@@ -108,7 +108,7 @@ describe('bookstore Account API', { tags: ['Task-6', 'Task-8'] }, () => {
     })
 
     it('возвращает данные пользователя при корректном токене', async () => {
-      const res = await booksStoreService.userController.getUser(
+      const res = await bookStoreService.userController.getUser(
         sharedUser.userId,
         {
           headers: { Authorization: `Bearer ${sharedToken}` },
@@ -133,7 +133,7 @@ describe('bookstore Account API', { tags: ['Task-6', 'Task-8'] }, () => {
     afterAll(async () => {
       // Страховка на случай если тесты упали до получения токена
       if (!localToken) {
-        localToken = await booksStoreService.userController.generateToken(
+        localToken = await bookStoreService.userController.generateToken(
           { userName: localUser.userName, password: localUser.password },
         )
       }
@@ -141,20 +141,20 @@ describe('bookstore Account API', { tags: ['Task-6', 'Task-8'] }, () => {
       await deleteTestUser(localUser.userId, localToken)
     })
 
-    it('возвращает 400 (code: "1200") при отсутствии тела запроса', async () => {
-      const res = await booksStoreService.userController.isUserAuthorized()
+    it.concurrent('возвращает 400 (code: "1200") при отсутствии тела запроса', async () => {
+      const res = await bookStoreService.userController.isUserAuthorized()
       expect(res.status).toBe(400)
       expect(res._data).toHaveProperty('code', '1200')
     })
 
-    it('возвращает 404 (code: "1207") для несуществующего пользователя', async () => {
-      const res = await booksStoreService.userController.isUserAuthorized(generateUserCredentials())
+    it.concurrent('возвращает 404 (code: "1207") для несуществующего пользователя', async () => {
+      const res = await bookStoreService.userController.isUserAuthorized(generateUserCredentials())
       expect(res.status).toBe(404)
       expect(res._data).toHaveProperty('code', '1207')
     })
 
     it('возвращает false если токен не был получен', async () => {
-      const res = await booksStoreService.userController.isUserAuthorized(
+      const res = await bookStoreService.userController.isUserAuthorized(
         { userName: localUser.userName, password: localUser.password },
       )
 
@@ -163,11 +163,11 @@ describe('bookstore Account API', { tags: ['Task-6', 'Task-8'] }, () => {
     })
 
     it('возвращает true после получения токена', async () => {
-      localToken = await booksStoreService.userController.generateToken(
+      localToken = await bookStoreService.userController.generateToken(
         { userName: localUser.userName, password: localUser.password },
       )
 
-      const res = await booksStoreService.userController.isUserAuthorized(
+      const res = await bookStoreService.userController.isUserAuthorized(
         { userName: localUser.userName, password: localUser.password },
       )
 
@@ -189,21 +189,21 @@ describe('bookstore Account API', { tags: ['Task-6', 'Task-8'] }, () => {
       await deleteTestUser(localUser.userId, localToken)
     })
 
-    it('возвращает 401 (code: "1200") без токена авторизации', async () => {
-      const res = await booksStoreService.userController.deleteUser(localUser.userId)
+    it.concurrent('возвращает 401 (code: "1200") без токена авторизации', async () => {
+      const res = await bookStoreService.userController.deleteUser(localUser.userId)
       expect(res.status).toBe(401)
       expect(res._data).toHaveProperty('code', '1200')
     })
 
     it('успешно удаляет пользователя', async () => {
-      const res1 = await booksStoreService.userController.isUserAuthorized(
+      const res1 = await bookStoreService.userController.isUserAuthorized(
         { userName: localUser.userName, password: localUser.password },
       )
 
       expect(res1.status).toBe(200)
       expect(res1._data).toBe(true)
 
-      const res = await booksStoreService.userController.deleteUser(localUser.userId, {
+      const res = await bookStoreService.userController.deleteUser(localUser.userId, {
         headers: { Authorization: `Bearer ${localToken}` },
       })
 
@@ -217,7 +217,7 @@ describe('bookstore Account API', { tags: ['Task-6', 'Task-8'] }, () => {
     //  Пока скипаю данный тест
     it.skip('возвращает 401 (code: "1200") при попытке удалить уже удалённого пользователя', async () => {
       // После удаления токен инвалидируется
-      const res = await booksStoreService.userController.deleteUser(localUser.userId, {
+      const res = await bookStoreService.userController.deleteUser(localUser.userId, {
         headers: { Authorization: `Bearer ${localToken}` },
       })
 
@@ -247,9 +247,9 @@ describe('bookstore Book API', { tags: ['Task-9'] }, () => {
     await deleteTestUser(sharedUser.userId, sharedToken)
   })
 
-  describe('[GET] /Books - получение всех книг', () => {
+  describe.concurrent('[GET] /Books - получение всех книг', () => {
     it('возвращает 200 и список книг без авторизации', async () => {
-      const res = await booksStoreService.booksController.getBooks()
+      const res = await bookStoreService.booksController.getBooks()
 
       expect(res.status).toBe(200)
       expect(res._data).toHaveProperty('books')
@@ -258,7 +258,7 @@ describe('bookstore Book API', { tags: ['Task-9'] }, () => {
     })
 
     it('книга содержит обязательные поля', async () => {
-      const res = await booksStoreService.booksController.getBooks()
+      const res = await bookStoreService.booksController.getBooks()
       const book = res._data.books[0]
 
       expect(book).toMatchObject({
@@ -274,13 +274,16 @@ describe('bookstore Book API', { tags: ['Task-9'] }, () => {
       })
     })
 
-    it('список содержит все ожидаемые книги', async () => {
-      const res = await booksStoreService.booksController.getBooks()
-      const isbns = res._data.books.map(book => book.isbn)
+    describe('список содержит все ожидаемые книги', async () => {
+      const books = (await bookStoreService.booksController.getBooks())?._data?.books
 
-      for (const book of BOOKS) {
-        expect(isbns).toContain(book.isbn)
-      }
+      it.each(BOOKS)('содержит книгу "$title" (isbn: $isbn)', ({ isbn, title }) => {
+        const book = books.find(book => book.isbn === isbn)
+
+        expect(book).toBeDefined()
+        expect(book).toHaveProperty('isbn', isbn)
+        expect(book).toHaveProperty('title', title)
+      })
     })
   })
 
@@ -298,8 +301,8 @@ describe('bookstore Book API', { tags: ['Task-9'] }, () => {
       await deleteTestUser(localUser.userId, localToken)
     })
 
-    it('возвращает 401 (code: "1200") без токена авторизации', async () => {
-      const res = await booksStoreService.booksController.addBooks({
+    it.concurrent('возвращает 401 (code: "1200") без токена авторизации', async () => {
+      const res = await bookStoreService.booksController.addBooks({
         userId: localUser.userId,
         collectionOfIsbns: [{ isbn: FIRST_BOOK.isbn }],
       })
@@ -309,7 +312,7 @@ describe('bookstore Book API', { tags: ['Task-9'] }, () => {
     })
 
     it('возвращает 400 (code: "1207") при пустом collectionOfIsbns', async () => {
-      const res = await booksStoreService.booksController.addBooks(
+      const res = await bookStoreService.booksController.addBooks(
         {
           userId: localUser.userId,
           collectionOfIsbns: [],
@@ -322,7 +325,7 @@ describe('bookstore Book API', { tags: ['Task-9'] }, () => {
     })
 
     it('успешно добавляет книгу пользователю', async () => {
-      const res = await booksStoreService.booksController.addBooks(
+      const res = await bookStoreService.booksController.addBooks(
         {
           userId: localUser.userId,
           collectionOfIsbns: [{ isbn: FIRST_BOOK.isbn }],
@@ -337,7 +340,7 @@ describe('bookstore Book API', { tags: ['Task-9'] }, () => {
 
     it('возвращает 400 (code: "1210") при добавлении уже добавленной книги', async () => {
       // FIRST_BOOK уже добавлена в предыдущем тесте
-      const res = await booksStoreService.booksController.addBooks(
+      const res = await bookStoreService.booksController.addBooks(
         {
           userId: localUser.userId,
           collectionOfIsbns: [{ isbn: FIRST_BOOK.isbn }],
@@ -360,7 +363,7 @@ describe('bookstore Book API', { tags: ['Task-9'] }, () => {
       localToken = userWithToken.token
 
       // Добавляем FIRST_BOOK - её будем заменять в тестах
-      await booksStoreService.booksController.addBooks(
+      await bookStoreService.booksController.addBooks(
         {
           userId: localUser.userId,
           collectionOfIsbns: [{ isbn: FIRST_BOOK.isbn }],
@@ -370,14 +373,14 @@ describe('bookstore Book API', { tags: ['Task-9'] }, () => {
     })
 
     afterAll(async () => {
-      await booksStoreService.booksController.deleteBooks(localUser.userId, {
+      await bookStoreService.booksController.deleteBooks(localUser.userId, {
         headers: { Authorization: `Bearer ${localToken}` },
       })
       await deleteTestUser(localUser.userId, localToken)
     })
 
-    it('возвращает 401 (code: "1200") без токена авторизации', async () => {
-      const res = await booksStoreService.booksController.updateBooks(
+    it.concurrent('возвращает 401 (code: "1200") без токена авторизации', async () => {
+      const res = await bookStoreService.booksController.updateBooks(
         FIRST_BOOK.isbn,
         { userId: localUser.userId, isbn: SECOND_BOOK.isbn },
       )
@@ -387,7 +390,7 @@ describe('bookstore Book API', { tags: ['Task-9'] }, () => {
     })
 
     it('возвращает 400 (code: "1205") при замене на несуществующий ISBN', async () => {
-      const res = await booksStoreService.booksController.updateBooks(
+      const res = await bookStoreService.booksController.updateBooks(
         FIRST_BOOK.isbn,
         { userId: localUser.userId, isbn: 'non-existent-isbn' },
         { headers: { Authorization: `Bearer ${localToken}` } },
@@ -399,7 +402,7 @@ describe('bookstore Book API', { tags: ['Task-9'] }, () => {
 
     it('возвращает 400 (code: "1206") при замене книги отсутствующей у пользователя', async () => {
       // SECOND_BOOK есть в магазине, но не добавлена пользователю
-      const res = await booksStoreService.booksController.updateBooks(
+      const res = await bookStoreService.booksController.updateBooks(
         SECOND_BOOK.isbn,
         { userId: localUser.userId, isbn: FIRST_BOOK.isbn },
         { headers: { Authorization: `Bearer ${localToken}` } },
@@ -410,7 +413,7 @@ describe('bookstore Book API', { tags: ['Task-9'] }, () => {
     })
 
     it('успешно заменяет книгу пользователя', async () => {
-      const res = await booksStoreService.booksController.updateBooks(
+      const res = await bookStoreService.booksController.updateBooks(
         FIRST_BOOK.isbn,
         { userId: localUser.userId, isbn: SECOND_BOOK.isbn },
         { headers: { Authorization: `Bearer ${localToken}` } },
@@ -437,7 +440,7 @@ describe('bookstore Book API', { tags: ['Task-9'] }, () => {
       localToken = userWithToken.token
 
       // Добавляем две книги - чтобы убедиться что удаляются все, а не одна
-      await booksStoreService.booksController.addBooks(
+      await bookStoreService.booksController.addBooks(
         {
           userId: localUser.userId,
           collectionOfIsbns: [
@@ -451,21 +454,21 @@ describe('bookstore Book API', { tags: ['Task-9'] }, () => {
 
     afterAll(async () => {
       // В случае падения тестов, пробуем очистить
-      await booksStoreService.booksController.deleteBooks(localUser.userId, {
+      await bookStoreService.booksController.deleteBooks(localUser.userId, {
         headers: { Authorization: `Bearer ${localToken}` },
       })
       await deleteTestUser(localUser.userId, localToken)
     })
 
-    it('возвращает 401 (code: "1200") без токена авторизации', async () => {
-      const res = await booksStoreService.booksController.deleteBooks(localUser.userId)
+    it.concurrent('возвращает 401 (code: "1200") без токена авторизации', async () => {
+      const res = await bookStoreService.booksController.deleteBooks(localUser.userId)
 
       expect(res.status).toBe(401)
       expect(res._data).toHaveProperty('code', '1200')
     })
 
     it('успешно удаляет все книги пользователя', async () => {
-      const res = await booksStoreService.booksController.deleteBooks(
+      const res = await bookStoreService.booksController.deleteBooks(
         localUser.userId,
         { headers: { Authorization: `Bearer ${localToken}` } },
       )
@@ -474,7 +477,7 @@ describe('bookstore Book API', { tags: ['Task-9'] }, () => {
       expect(res._data).toBeUndefined()
 
       // Проверяем, что книги удалены
-      const user = await booksStoreService.userController.getUser(
+      const user = await bookStoreService.userController.getUser(
         localUser.userId,
         { headers: { Authorization: `Bearer ${localToken}` } },
       )

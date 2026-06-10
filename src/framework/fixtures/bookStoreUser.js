@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker'
 import { config as bookstoreConfig } from '@/framework/config/bookstore.js'
-import { booksStoreService } from '@/framework/services/booksStoreService.js'
+import { bookStoreService } from '@/framework/services/bookStoreService.js'
 
 /**
  * Для отдельных кейсов иногда нужно создавать отдельных пользователей.
@@ -26,7 +26,7 @@ export function generateUserCredentials(username, password) {
  */
 export async function createTestUser(credentials = {}) {
   const generatedCredentials = generateUserCredentials(credentials.username, credentials.password)
-  const { _data: user } = await booksStoreService.userController.createUser(generatedCredentials)
+  const { _data: user } = await bookStoreService.userController.createUser(generatedCredentials)
 
   return {
     userId: user.userID,
@@ -41,7 +41,7 @@ export async function createTestUser(credentials = {}) {
  */
 export async function createAuthenticatedUser(credentials = {}) {
   const user = await createTestUser(credentials)
-  const { _data: tokenData } = await booksStoreService.userController.generateToken({
+  const { _data: tokenData } = await bookStoreService.userController.generateToken({
     userName: user.userName,
     password: user.password,
   })
@@ -53,7 +53,7 @@ export async function createAuthenticatedUser(credentials = {}) {
  * Удаляет тестового авторизованного пользователя (т.е. с токеном)
  */
 export function deleteTestUser(userId, token) {
-  return booksStoreService.userController.deleteUser(userId, {
+  return bookStoreService.userController.deleteUser(userId, {
     headers: { Authorization: `Bearer ${token}` },
   })
 }

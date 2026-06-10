@@ -8,7 +8,7 @@ const instance = ofetch.create({
   ignoreResponseError: true,
 })
 
-export const booksStoreService = {
+export const bookStoreService = {
   userController: {
     /**
      * Создание пользователя
