@@ -23,7 +23,7 @@ npm run lint:fix
 
 ## Используемые технологии
 - [Vite](https://vite.dev/)
-- [Vitest](https://vitest.dev/)
+- [Vitest](https://vitest.dev/) + [@vitest/ui](https://vitest.dev/guide/ui.html)
 - [ofetch](https://github.com/unjs/ofetch)
 - [faker-js](https://fakerjs.dev/)
 - ESLint (конфиг [Anthony Fu](https://github.com/antfu/eslint-config))
