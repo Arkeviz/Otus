@@ -13,6 +13,12 @@ export default defineConfig(({ mode }) => {
       globals: false,
       testTimeout: 10_000,
       env,
+
+      reporter: env.GITHUB_ACTIONS === 'true'
+        ? ['default', 'html', 'github-actions']
+        : ['default', 'html'],
+      outputFile: './reports/index.html',
+
       tags: [
         {
           name: 'Task-5',
