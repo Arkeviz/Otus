@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker'
-import { config as bookstoreConfig } from '@/framework/config/bookstore.js'
-import { bookStoreService } from '@/framework/services/bookStoreService.js'
+import { config as bookstoreConfig } from '@/framework/config/bookstore'
+import { bookStoreService } from '@/framework/services/bookStoreService'
 
 /**
  * Для отдельных кейсов иногда нужно создавать отдельных пользователей.
@@ -13,7 +13,10 @@ import { bookStoreService } from '@/framework/services/bookStoreService.js'
  * @param username
  * @param password
  */
-export function generateUserCredentials(username, password) {
+export function generateUserCredentials(
+  username?: string | null,
+  password?: string | null,
+) {
   return {
     userName: username ?? faker.internet.username(),
     password: password ?? bookstoreConfig.passwordForTestUsers,
@@ -24,12 +27,14 @@ export function generateUserCredentials(username, password) {
  * Создаёт тестового пользователя, без токена.
  * С возможностью настройки логина/пароля
  */
-export async function createTestUser(credentials = {}) {
+export async function createTestUser(
+  credentials: { username?: string, password?: string } = {},
+) {
   const generatedCredentials = generateUserCredentials(credentials.username, credentials.password)
   const { _data: user } = await bookStoreService.userController.createUser(generatedCredentials)
 
   return {
-    userId: user.userID,
+    userId: user!.userID,
     userName: generatedCredentials.userName,
     password: generatedCredentials.password,
   }
@@ -39,20 +44,20 @@ export async function createTestUser(credentials = {}) {
  * Создаёт тестового пользователя, с токеном (т.е. уже авторизированного).
  * С возможностью настройки логина/пароля
  */
-export async function createAuthenticatedUser(credentials = {}) {
+export async function createAuthenticatedUser(credentials: { username?: string, password?: string } = {}) {
   const user = await createTestUser(credentials)
   const { _data: tokenData } = await bookStoreService.userController.generateToken({
     userName: user.userName,
     password: user.password,
   })
 
-  return { user, token: tokenData.token }
+  return { user, token: tokenData!.token }
 }
 
 /**
  * Удаляет тестового авторизованного пользователя (т.е. с токеном)
  */
-export function deleteTestUser(userId, token) {
+export function deleteTestUser(userId: string, token: string) {
   return bookStoreService.userController.deleteUser(userId, {
     headers: { Authorization: `Bearer ${token}` },
   })

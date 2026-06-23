@@ -3,7 +3,7 @@
  * @param {string} name
  * @returns {boolean}
  */
-export const nameIsValid = name => typeof name === 'string' && name.length >= 2 && /^[a-z]+$/.test(name)
+export const nameIsValid = (name: string): boolean => typeof name === 'string' && name.length >= 2 && /^[a-z]+$/.test(name)
 
 /**
  * Удаление пробелов из строки
@@ -11,8 +11,13 @@ export const nameIsValid = name => typeof name === 'string' && name.length >= 2 
  * @param {string} text
  * @returns {string}
  */
-export const fullTrim = text => (text ?? '').replace(/\s+/g, '')
+export const fullTrim = (text: string): string => (text ?? '').replace(/\s+/g, '')
 
+interface TItem {
+  price: number
+  quantity: number
+  name?: string
+}
 /**
  * Подсчёт суммы заказа
  *
@@ -27,7 +32,7 @@ export const fullTrim = text => (text ?? '').replace(/\s+/g, '')
  * @example getTotal([{ price: 10, quantity: 10 }], 10) // 90
  * @example getTotal([{ price: 10, quantity: 10 }], 100) // 0
  */
-export function getTotal(items = [], discount = 0) {
+export function getTotal(items: TItem[] = [], discount = 0) {
   if (typeof discount !== 'number') {
     throw new TypeError('Скидка должна быть числом')
   }
@@ -51,7 +56,7 @@ export function getTotal(items = [], discount = 0) {
  * }
  * getScore(scores) // 16
  */
-export function getScore(obj) {
+export function getScore(obj: { [key: string]: number }) {
   let score = 0
   for (const key in obj) {
     score += +obj[key]

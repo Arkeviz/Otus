@@ -12,8 +12,8 @@ export const CHARACTERS_RESULTS = Object.freeze({
  * kolobok('Дедушка') // Я от дедушки ушёл
  * kolobok('Лиса') // Меня съели
  */
-export function kolobok(character) {
-  return CHARACTERS_RESULTS[character] ?? 'А от такого я ещё не убегал😨'
+export function kolobok(character: string) {
+  return CHARACTERS_RESULTS[character as keyof typeof CHARACTERS_RESULTS] ?? 'А от такого я ещё не убегал😨'
 }
 
 /**
@@ -26,6 +26,6 @@ export function kolobok(character) {
  * newYear('Дед Мороз') // Дед Мороз! Дед Мороз! Дед Мороз!
  * newYear('Снегурочка') // Снегурочка! Снегурочка! Снегурочка!
  */
-export function newYear(name) {
+export function newYear(name: string) {
   return `${name}! ${name}! ${name}!`
 }
