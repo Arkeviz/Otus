@@ -43,7 +43,6 @@ describe('bookstore Account API', { tags: ['Task-6', 'Task-8'] }, () => {
       const res = await bookStoreService.userController.createUser(user)
 
       expect(res.status).toBe(201)
-      // FIXME: Swagger описывает поле как `userId`, но API возвращает `userID`
       expect(res._data).toHaveProperty('userID')
 
       // Чистим созданного пользователя

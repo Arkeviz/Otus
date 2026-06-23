@@ -4,6 +4,6 @@ export interface TApiRequest<Request = object, Response = void> {
 }
 
 export interface TSimpleResponse {
-  code: number
+  code: string
   message: string
 }

@@ -1,13 +1,26 @@
 import type { TApiRequest, TSimpleResponse } from '@/framework/types/api'
-import type { TBook, TUser } from '@/framework/types/bookstore'
+
+export interface TBook {
+  isbn: string
+  title: string
+  subTitle: string
+  author: string
+  publish_date: string
+  publisher: string
+  pages: number
+  description: string
+  website: string
+}
+export interface TUser {
+  // FIXME: API непоследовательно возвращает userID (createUser) и userId (getUser, replaceBook)
+  userID: string
+  username: string
+  books: TBook[]
+}
 
 export type TGetUser = TApiRequest<
   string,
-  {
-    userID: string
-    username: string
-    books: TBook[]
-  }
+  TUser
 >
 
 export type TCreateUser = TApiRequest<
@@ -47,17 +60,7 @@ export type TCheckUserAuthorization = TApiRequest<
 export type TGetBooks = TApiRequest<
   null,
   {
-    books: {
-      isbn: string
-      title: string
-      subTitle: string
-      author: string
-      publish_date: string
-      publisher: string
-      pages: number
-      description: string
-      website: string
-    }[]
+    books: TBook[]
   }
 >
 
