@@ -20,8 +20,13 @@ npm run start
 ```shell
 npm run lint:fix
 ```
+Проверка типов
+```shell
+npm run type-check
+```
 
 ## Используемые технологии
+- TypeScript
 - [Vite](https://vite.dev/)
 - [Vitest](https://vitest.dev/)
 - [ofetch](https://github.com/unjs/ofetch)
