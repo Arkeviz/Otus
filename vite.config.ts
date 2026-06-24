@@ -1,7 +1,7 @@
 import process from 'node:process'
 import { fileURLToPath, URL } from 'node:url'
-/// <reference types="vitest/config" />
-import { defineConfig, loadEnv } from 'vite'
+import { loadEnv } from 'vite'
+import { defineConfig } from 'vitest/config'
 
 // Configure Vitest (https://vitest.dev/config/)
 export default defineConfig(({ mode }) => {
