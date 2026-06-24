@@ -3,11 +3,6 @@ import { fullTrim, getTotal, nameIsValid } from '@/app'
 
 describe('app.ts', { tags: ['Task-5'] }, () => {
   describe('nameIsValid', () => {
-    type TestCase = [
-      title: string,
-      name: string | number,
-      expected: boolean,
-    ]
     it.for(
       [
         ['имя кириллицей с большой буквы', 'Алексей', false],
@@ -16,18 +11,13 @@ describe('app.ts', { tags: ['Task-5'] }, () => {
         ['имя латиницей с маленькой буквы', 'aleksei', true],
         ['цифры в имени', 'агент47', false],
         ['цифры вместо имени', 47 as never, false],
-      ] satisfies TestCase[],
+      ] satisfies [string, any, boolean][],
     )('%s', ([_, name, res]) => {
       expect(nameIsValid(name)).toBe(res)
     })
   })
 
   describe('fullTrim', () => {
-    type TestCase = [
-      title: string,
-      name: string,
-      expected: string,
-    ]
     it.for(
       [
         ['слово с пробелом', 'до вод', 'довод'],
@@ -35,26 +25,25 @@ describe('app.ts', { tags: ['Task-5'] }, () => {
         ['текст с пробелами', ' Пробелы По Краям ', 'ПробелыПоКраям'],
         ['текст без пробелов с тире', 'чики-брики ', 'чики-брики'],
         ['undefined вместо текста', undefined as never, ''],
-      ] satisfies TestCase[],
+      ] satisfies [string, any, string][],
     )('%s', ([_, name, res]) => {
       expect(fullTrim(name)).toBe(res)
     })
   })
 
   describe('getTotal', () => {
-    type TestCase = [
-      title: string,
-      items: { price: number, quantity: number }[],
-      discount: number,
-      expected: number,
-    ]
     it.for(
       [
         ['цена: 10, кол-во: 10, итого: 100', [{ price: 10, quantity: 10 }], 0, 100],
         ['цена: 10, кол-во: 1, итого: 10', [{ price: 10, quantity: 1 }], 0, 10],
         ['2 товара, итого: 100', [{ price: 10, quantity: 1 }, { price: 10, quantity: 9 }], 0, 100],
         ['цена: 10, кол-во: 10, скидка: 10 итого: 90', [{ price: 10, quantity: 10 }], 10, 90],
-      ] satisfies TestCase[],
+      ] satisfies [
+        string,
+        { price: number, quantity: number }[],
+        number,
+        number,
+      ][],
     )('%s', ([_, items, discount, res]) => {
       expect(getTotal(items, discount)).toBe(res)
     })
