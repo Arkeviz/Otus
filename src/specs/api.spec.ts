@@ -5,15 +5,19 @@ import {
   createTestUser,
   deleteTestUser,
   generateUserCredentials,
-} from '@/framework/fixtures/bookStoreUser.js'
-import { bookStoreService } from '@/framework/services/bookStoreService.js'
+} from '@/framework/fixtures/bookStoreUser'
+import { bookStoreService } from '@/framework/services/bookStoreService'
 
 describe('bookstore Account API', { tags: ['Task-6', 'Task-8'] }, () => {
   // Каждый раз при запуске тестов создаётся новый пользователь,
   // который используется в последующих тестах
   // и удаляется по их окончании
-  let sharedUser
-  let sharedToken
+  let sharedUser: {
+    userId: string
+    userName: string
+    password: string
+  }
+  let sharedToken: string
 
   beforeAll(async () => {
     const userWithToken = await createAuthenticatedUser()
@@ -39,7 +43,6 @@ describe('bookstore Account API', { tags: ['Task-6', 'Task-8'] }, () => {
       const res = await bookStoreService.userController.createUser(user)
 
       expect(res.status).toBe(201)
-      // FIXME: Swagger описывает поле как `userId`, но API возвращает `userID`
       expect(res._data).toHaveProperty('userID')
 
       // Чистим созданного пользователя
@@ -49,8 +52,8 @@ describe('bookstore Account API', { tags: ['Task-6', 'Task-8'] }, () => {
           password: user.password,
         },
       )
-      await bookStoreService.userController.deleteUser(res._data.userID, {
-        headers: { Authorization: `Bearer ${tokenData.token}` },
+      await bookStoreService.userController.deleteUser(res._data!.userID, {
+        headers: { Authorization: `Bearer ${tokenData!.token}` },
       })
     })
 
@@ -83,8 +86,8 @@ describe('bookstore Account API', { tags: ['Task-6', 'Task-8'] }, () => {
 
       expect(res.status).toBe(200)
       expect(res._data).toHaveProperty('status', 'Success')
-      expect(res._data.token).not.toBeNullable()
-      sharedToken = res._data.token
+      expect(res._data!.token).not.toBeNullable()
+      sharedToken = res._data!.token
     })
   })
 
@@ -122,8 +125,12 @@ describe('bookstore Account API', { tags: ['Task-6', 'Task-8'] }, () => {
   })
 
   describe('[POST] /Authorized - авторизация пользователя', () => {
-    let localUser
-    let localToken
+    let localUser: {
+      userId: string
+      userName: string
+      password: string
+    }
+    let localToken: string
 
     beforeAll(async () => {
       // Создаём пользователя БЕЗ вызова GenerateToken - он не авторизован
@@ -133,9 +140,10 @@ describe('bookstore Account API', { tags: ['Task-6', 'Task-8'] }, () => {
     afterAll(async () => {
       // Страховка на случай если тесты упали до получения токена
       if (!localToken) {
-        localToken = await bookStoreService.userController.generateToken(
+        const res = await bookStoreService.userController.generateToken(
           { userName: localUser.userName, password: localUser.password },
         )
+        localToken = res._data!.token
       }
 
       await deleteTestUser(localUser.userId, localToken)
@@ -163,9 +171,10 @@ describe('bookstore Account API', { tags: ['Task-6', 'Task-8'] }, () => {
     })
 
     it('возвращает true после получения токена', async () => {
-      localToken = await bookStoreService.userController.generateToken(
+      const token = await bookStoreService.userController.generateToken(
         { userName: localUser.userName, password: localUser.password },
       )
+      localToken = token._data!.token
 
       const res = await bookStoreService.userController.isUserAuthorized(
         { userName: localUser.userName, password: localUser.password },
@@ -177,8 +186,12 @@ describe('bookstore Account API', { tags: ['Task-6', 'Task-8'] }, () => {
   })
 
   describe('[DELETE] /User/{UUID} - удаление пользователя', () => {
-    let localUser
-    let localToken
+    let localUser: {
+      userId: string
+      userName: string
+      password: string
+    }
+    let localToken: string
 
     beforeAll(async () => {
       const userWithToken = await createAuthenticatedUser()
@@ -235,8 +248,12 @@ describe('bookstore Book API', { tags: ['Task-9'] }, () => {
   // Каждый раз при запуске тестов создаётся новый пользователь,
   // который используется в последующих тестах
   // и удаляется по их окончании
-  let sharedUser
-  let sharedToken
+  let sharedUser: {
+    userId: string
+    userName: string
+    password: string
+  }
+  let sharedToken: string
 
   beforeAll(async () => {
     const userWithToken = await createAuthenticatedUser()
@@ -253,13 +270,13 @@ describe('bookstore Book API', { tags: ['Task-9'] }, () => {
 
       expect(res.status).toBe(200)
       expect(res._data).toHaveProperty('books')
-      expect(Array.isArray(res._data.books)).toBe(true)
-      expect(res._data.books.length).toBeGreaterThanOrEqual(0)
+      expect(Array.isArray(res._data!.books)).toBe(true)
+      expect(res._data!.books.length).toBeGreaterThanOrEqual(0)
     })
 
     it('книга содержит обязательные поля', async () => {
       const res = await bookStoreService.booksController.getBooks()
-      const book = res._data.books[0]
+      const book = res._data!.books[0]
 
       expect(book).toMatchObject({
         isbn: expect.any(String),
@@ -278,7 +295,7 @@ describe('bookstore Book API', { tags: ['Task-9'] }, () => {
       const books = (await bookStoreService.booksController.getBooks())?._data?.books
 
       it.each(BOOKS)('содержит книгу "$title" (isbn: $isbn)', ({ isbn, title }) => {
-        const book = books.find(book => book.isbn === isbn)
+        const book = books?.find(book => book.isbn === isbn)
 
         expect(book).toBeDefined()
         expect(book).toHaveProperty('isbn', isbn)
@@ -288,8 +305,12 @@ describe('bookstore Book API', { tags: ['Task-9'] }, () => {
   })
 
   describe('[POST] /Books - добавление книги пользователю', () => {
-    let localUser
-    let localToken
+    let localUser: {
+      userId: string
+      userName: string
+      password: string
+    }
+    let localToken: string
 
     beforeAll(async () => {
       const userWithToken = await createAuthenticatedUser()
@@ -335,7 +356,7 @@ describe('bookstore Book API', { tags: ['Task-9'] }, () => {
 
       expect(res.status).toBe(201)
       expect(res._data).toHaveProperty('books')
-      expect(res._data.books).toContainEqual({ isbn: FIRST_BOOK.isbn })
+      expect(res._data!.books).toContainEqual({ isbn: FIRST_BOOK.isbn })
     })
 
     it('возвращает 400 (code: "1210") при добавлении уже добавленной книги', async () => {
@@ -354,8 +375,12 @@ describe('bookstore Book API', { tags: ['Task-9'] }, () => {
   })
 
   describe('[PUT] /Books/{ISBN} - замена книги пользователя', () => {
-    let localUser
-    let localToken
+    let localUser: {
+      userId: string
+      userName: string
+      password: string
+    }
+    let localToken: string
 
     beforeAll(async () => {
       const userWithToken = await createAuthenticatedUser()
@@ -380,7 +405,7 @@ describe('bookstore Book API', { tags: ['Task-9'] }, () => {
     })
 
     it.concurrent('возвращает 401 (code: "1200") без токена авторизации', async () => {
-      const res = await bookStoreService.booksController.updateBooks(
+      const res = await bookStoreService.booksController.replaceBook(
         FIRST_BOOK.isbn,
         { userId: localUser.userId, isbn: SECOND_BOOK.isbn },
       )
@@ -390,7 +415,7 @@ describe('bookstore Book API', { tags: ['Task-9'] }, () => {
     })
 
     it('возвращает 400 (code: "1205") при замене на несуществующий ISBN', async () => {
-      const res = await bookStoreService.booksController.updateBooks(
+      const res = await bookStoreService.booksController.replaceBook(
         FIRST_BOOK.isbn,
         { userId: localUser.userId, isbn: 'non-existent-isbn' },
         { headers: { Authorization: `Bearer ${localToken}` } },
@@ -402,7 +427,7 @@ describe('bookstore Book API', { tags: ['Task-9'] }, () => {
 
     it('возвращает 400 (code: "1206") при замене книги отсутствующей у пользователя', async () => {
       // SECOND_BOOK есть в магазине, но не добавлена пользователю
-      const res = await bookStoreService.booksController.updateBooks(
+      const res = await bookStoreService.booksController.replaceBook(
         SECOND_BOOK.isbn,
         { userId: localUser.userId, isbn: FIRST_BOOK.isbn },
         { headers: { Authorization: `Bearer ${localToken}` } },
@@ -413,7 +438,7 @@ describe('bookstore Book API', { tags: ['Task-9'] }, () => {
     })
 
     it('успешно заменяет книгу пользователя', async () => {
-      const res = await bookStoreService.booksController.updateBooks(
+      const res = await bookStoreService.booksController.replaceBook(
         FIRST_BOOK.isbn,
         { userId: localUser.userId, isbn: SECOND_BOOK.isbn },
         { headers: { Authorization: `Bearer ${localToken}` } },
@@ -431,8 +456,12 @@ describe('bookstore Book API', { tags: ['Task-9'] }, () => {
   })
 
   describe('[DELETE] /Books - удаление всех книг пользователя', () => {
-    let localUser
-    let localToken
+    let localUser: {
+      userId: string
+      userName: string
+      password: string
+    }
+    let localToken: string
 
     beforeAll(async () => {
       const userWithToken = await createAuthenticatedUser()
@@ -481,7 +510,7 @@ describe('bookstore Book API', { tags: ['Task-9'] }, () => {
         localUser.userId,
         { headers: { Authorization: `Bearer ${localToken}` } },
       )
-      expect(user._data.books).toHaveLength(0)
+      expect(user._data!.books).toHaveLength(0)
     })
   })
 })
