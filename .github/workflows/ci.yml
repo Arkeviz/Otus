@@ -1,0 +1,108 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    env:
+      VITE_TEST_BOOKSTORE_API_URL: ${{ secrets.VITE_TEST_BOOKSTORE_API_URL }}
+      VITE_TEST_BOOKSTORE_USER_ID: ${{ secrets.VITE_TEST_BOOKSTORE_USER_ID }}
+      VITE_TEST_BOOKSTORE_USERNAME: ${{ secrets.VITE_TEST_BOOKSTORE_USERNAME }}
+      VITE_TEST_BOOKSTORE_PASSWORD: ${{ secrets.VITE_TEST_BOOKSTORE_PASSWORD }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm start
+
+      - name: Upload HTML report
+        # Выполняем всегда - отчёт нужен и при падении тестов
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: reports/
+          retention-days: 30
+
+  publish-report:
+    name: Publish report to GitHub Pages
+    # Запускаем всегда, но только после завершения job test
+    needs: test
+    if: always()
+    runs-on: ubuntu-latest
+
+    # Права для публикации на GitHub Pages
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download HTML report
+        uses: actions/download-artifact@v4
+        with:
+          name: test-report
+          path: reports/
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: reports/
+          force_orphan: true
+
+  notify-telegram:
+    name: Notify Telegram
+    needs: test
+    if: always()
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Telegram notification
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          TEST_RESULT: ${{ needs.test.result }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.run_id }}
+          COMMIT_SHA: ${{ github.sha }}
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          PAGES_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+        run: |
+          if [ "$TEST_RESULT" = "success" ]; then
+            ICON="✅"
+            STATUS="Успех"
+          else
+            ICON="❌"
+            STATUS="Упаль"
+          fi
+
+          SHORT_SHA="${COMMIT_SHA:0:7}"
+          RUN_URL="https://github.com/${REPO}/actions/runs/${RUN_ID}"
+
+          MESSAGE="${ICON} *Тесты: ${STATUS}*
+
+          📦 *Репозиторий:* \`${REPO}\`
+          🔖 *Коммит:* \`${SHORT_SHA}\` — ${COMMIT_MESSAGE}
+          📊 *Отчёт:* [GitHub Pages](${PAGES_URL})
+          🔗 *Запуск:* [Actions](${RUN_URL})"
+
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
+            --data-urlencode "text=${MESSAGE}" \
+            --data-urlencode "parse_mode=Markdown" \
+            --data-urlencode "disable_web_page_preview=true"
