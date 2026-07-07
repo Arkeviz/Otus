@@ -10,7 +10,7 @@
     "test": "vitest",
     "test:ui": "vitest --ui",
     "test:run": "vitest run",
-    "start": "node src/main.ts",
+    "start": "vitest run",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "lint:ci": "eslint .",
