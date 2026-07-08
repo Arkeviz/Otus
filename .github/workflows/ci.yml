@@ -9,6 +9,7 @@ jobs:
   test:
     name: Run tests
     runs-on: ubuntu-latest
+
     environment: ci
     env:
       VITE_TEST_BOOKSTORE_API_URL: ${{ secrets.VITE_TEST_BOOKSTORE_API_URL }}
@@ -71,17 +72,19 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
 
+    environment: ci
+    env:
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      TEST_RESULT: ${{ needs.test.result }}
+      REPO: ${{ github.repository }}
+      RUN_ID: ${{ github.run_id }}
+      COMMIT_SHA: ${{ github.sha }}
+      COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+      PAGES_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
+
     steps:
       - name: Send Telegram notification
-        env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          TEST_RESULT: ${{ needs.test.result }}
-          REPO: ${{ github.repository }}
-          RUN_ID: ${{ github.run_id }}
-          COMMIT_SHA: ${{ github.sha }}
-          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
-          PAGES_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
         run: |
           if [ "$TEST_RESULT" = "success" ]; then
             ICON="✅"
