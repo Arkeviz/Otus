@@ -6,16 +6,22 @@ import { defineConfig } from 'vitest/config'
 // Configure Vitest (https://vitest.dev/config/)
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
-  console.warn('ENVENVENV', env)
 
   return {
     test: {
       /* for example, use global to avoid globals imports (describe, test, expect): */
       globals: false,
       testTimeout: 10_000,
-      env,
+      env: {
+        ...env,
+        // Явно пробрасываем из process.env как fallback
+        VITE_TEST_BOOKSTORE_API_URL: env.VITE_TEST_BOOKSTORE_API_URL || process.env.VITE_TEST_BOOKSTORE_API_URL || '',
+        VITE_TEST_BOOKSTORE_USER_ID: env.VITE_TEST_BOOKSTORE_USER_ID || process.env.VITE_TEST_BOOKSTORE_USER_ID || '',
+        VITE_TEST_BOOKSTORE_USERNAME: env.VITE_TEST_BOOKSTORE_USERNAME || process.env.VITE_TEST_BOOKSTORE_USERNAME || '',
+        VITE_TEST_BOOKSTORE_PASSWORD: env.VITE_TEST_BOOKSTORE_PASSWORD || process.env.VITE_TEST_BOOKSTORE_PASSWORD || '',
+      },
 
-      reporter: env.GITHUB_ACTIONS === 'true'
+      reporter: env.GITHUB_ACTIONS === 'true' || process.env.GITHUB_ACTIONS === 'true'
         ? ['default', 'html', 'github-actions']
         : ['default', 'html'],
       outputFile: './reports/index.html',
