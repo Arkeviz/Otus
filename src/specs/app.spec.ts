@@ -1,7 +1,11 @@
-import { describe, expect, it } from 'vitest'
+import { beforeAll, describe, expect, it } from 'vitest'
 import { fullTrim, getTotal, nameIsValid } from '@/app'
 
 describe('app.ts', { tags: ['Task-5'] }, () => {
+  beforeAll(async () => {
+    console.log('baseURL:', import.meta.env.VITE_TEST_BOOKSTORE_API_URL)
+    console.log('all env keys:', Object.keys(import.meta.env))
+  })
   describe('nameIsValid', () => {
     it.for(
       [
