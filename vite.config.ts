@@ -6,6 +6,7 @@ import { defineConfig } from 'vitest/config'
 // Configure Vitest (https://vitest.dev/config/)
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
+  console.warn('ENVENVENV', env)
 
   return {
     test: {
