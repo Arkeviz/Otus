@@ -9,6 +9,7 @@ jobs:
   test:
     name: Run tests
     runs-on: ubuntu-latest
+    environment: ci
     env:
       VITE_TEST_BOOKSTORE_API_URL: ${{ secrets.VITE_TEST_BOOKSTORE_API_URL }}
       VITE_TEST_BOOKSTORE_USER_ID: ${{ secrets.VITE_TEST_BOOKSTORE_USER_ID }}
