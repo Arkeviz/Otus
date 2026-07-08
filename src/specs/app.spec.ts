@@ -4,6 +4,7 @@ import { fullTrim, getTotal, nameIsValid } from '@/app'
 describe('app.ts', { tags: ['Task-5'] }, () => {
   beforeAll(async () => {
     console.log('baseURL:', import.meta.env.VITE_TEST_BOOKSTORE_API_URL)
+    console.log('GITHUB_ACTIONS:', import.meta.env.GITHUB_ACTIONS)
     Object.keys(import.meta.env).forEach((key) => {
       console.log(key)
     })
