@@ -77,9 +77,8 @@ jobs:
       TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
       TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
       TEST_RESULT: ${{ needs.test.result }}
-      REPO: ${{ github.repository }}
+      REPO: ${{ github.repositoryUrl }}
       RUN_ID: ${{ github.run_id }}
-      COMMIT_SHA: ${{ github.sha }}
       COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
       PAGES_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}
 
@@ -88,21 +87,19 @@ jobs:
         run: |
           if [ "$TEST_RESULT" = "success" ]; then
             ICON="✅"
-            STATUS="Успех"
+            STATUS="Успешно"
           else
             ICON="❌"
-            STATUS="Упаль"
+            STATUS="Упали"
           fi
 
-          SHORT_SHA="${COMMIT_SHA:0:7}"
           RUN_URL="https://github.com/${REPO}/actions/runs/${RUN_ID}"
 
-          MESSAGE="${ICON} *Тесты: ${STATUS}*
+          MESSAGE="${ICON} *(Otus QAJS) Тесты: ${STATUS}*
 
-          📦 *Репозиторий:* \`${REPO}\`
-          🔖 *Коммит:* \`${SHORT_SHA}\` — ${COMMIT_MESSAGE}
+          📦 *Репо:* \`${REPO}\`
           📊 *Отчёт:* [GitHub Pages](${PAGES_URL})
-          🔗 *Запуск:* [Actions](${RUN_URL})"
+          🔗 *Action:* [Actions](${RUN_URL})"
 
           curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
             --data-urlencode "chat_id=${TELEGRAM_CHAT_ID}" \
