@@ -1,6 +1,6 @@
 const helloPrefix = 'Hello, '
 
-function greet(name: string) {
+function greet(name) {
   return `${helloPrefix} ${name}!`
 }
 console.warn(greet('World'))

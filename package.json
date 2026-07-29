@@ -1,32 +1,20 @@
 {
   "name": "otus-qa-project",
   "type": "module",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "private": true,
   "author": "Aleksei Koposov",
   "license": "ISC",
-  "main": "src/main.ts",
+  "main": "src/main.js",
   "scripts": {
-    "test": "vitest",
-    "test:ui": "vitest --ui",
-    "test:run": "vitest run",
-    "start": "node src/main.ts",
+    "start": "node src/main.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "lint:ci": "eslint .",
-    "type-check": "tsc --noEmit"
-  },
-  "dependencies": {
-    "ofetch": "^1.5.1"
+    "lint:ci": "eslint ."
   },
   "devDependencies": {
     "@antfu/eslint-config": "^9.0.0",
-    "@faker-js/faker": "^10.4.0",
-    "@types/node": "^26.0.0",
-    "@vitest/ui": "^4.1.8",
     "eslint": "^10.3.0",
-    "typescript": "^6.0.3",
-    "vite": "^8.0.16",
     "vitest": "^4.1.7"
   }
 }

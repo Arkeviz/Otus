@@ -8,11 +8,7 @@ git clone https://github.com/Arkeviz/Otus.git
 npm ci
 ```
 ## Команды
-Запуск тестов
-```shell
-npm run test:run
-```
-Запуск `main.js`
+Запуска проекта
 ```shell
 npm run start
 ```
@@ -20,15 +16,7 @@ npm run start
 ```shell
 npm run lint:fix
 ```
-Проверка типов
-```shell
-npm run type-check
-```
 
 ## Используемые технологии
-- TypeScript
-- [Vite](https://vite.dev/)
-- [Vitest](https://vitest.dev/) + [@vitest/ui](https://vitest.dev/guide/ui.html)
-- [ofetch](https://github.com/unjs/ofetch)
-- [faker-js](https://fakerjs.dev/)
-- ESLint (конфиг [Anthony Fu](https://github.com/antfu/eslint-config))
+- eslint (конфиг [Anthony Fu](https://github.com/antfu/eslint-config))
+- ...TBA
