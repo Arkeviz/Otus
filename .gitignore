@@ -15,6 +15,7 @@ coverage
 reports
 build
 *.local
+.env
 
 # Editor directories and files
 .vscode/*
