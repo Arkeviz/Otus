@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test'
+import { HomePage } from '../pages/HomePage'
 
 /**
  * Эти два теста фиксируют известные баги:
@@ -12,12 +13,13 @@ test.describe('Известные проблемы', () => {
   test.fail(
     'переход по ссылке "Сериалы" должен вести на страницу с сериалами (Баг: раздел не реализован)',
     async ({ page }) => {
-      await page.goto('/')
+      const homePage = new HomePage(page)
 
-      await page.getByRole('link', { name: 'Сериалы' }).click()
-
-      // Ожидаемый результат: URL меняется на раздел сериалов, а не остаётся на главной
+      await homePage.goto()
       const homeUrl = page.url()
+
+      await homePage.clickSeriesLink()
+
       await expect(page).not.toHaveURL(homeUrl)
       await expect(page).toHaveURL(/serials|series/i)
     },
@@ -26,13 +28,13 @@ test.describe('Известные проблемы', () => {
   test.fail(
     'кнопка "Посмотреть всё" должна вести на полный каталог (Баг: не реализовано)',
     async ({ page }) => {
-      await page.goto('/')
+      const homePage = new HomePage(page)
 
+      await homePage.goto()
       const initialUrl = page.url()
-      await page.getByRole('link', { name: 'Посмотреть всё' }).click()
 
-      // Ожидаемый результат: происходит переход на страницу каталога
-      // (сейчас клик ни на что не влияет, URL остаётся прежним - баг)
+      await homePage.clickViewAllLink()
+
       await expect(page).not.toHaveURL(initialUrl)
     },
   )
