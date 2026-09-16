@@ -1,5 +1,5 @@
-import { expect, test } from '@playwright/test'
-import { HomePage } from '../pages/HomePage'
+import { test } from '@playwright/test'
+import { createHomePage } from '../pages/homePage'
 
 /**
  * Эти два теста фиксируют известные баги:
@@ -11,31 +11,31 @@ import { HomePage } from '../pages/HomePage'
 
 test.describe('Известные проблемы', () => {
   test.fail(
-    'переход по ссылке "Сериалы" должен вести на страницу с сериалами (Баг: раздел не реализован)',
+    'переход по ссылке "Сериалы" должен вести на страницу с сериалами (BUG: раздел не реализован)',
     async ({ page }) => {
-      const homePage = new HomePage(page)
+      const homePage = createHomePage(page)
 
       await homePage.goto()
-      const homeUrl = page.url()
+      const homeUrl = homePage.url()
 
       await homePage.clickSeriesLink()
 
-      await expect(page).not.toHaveURL(homeUrl)
-      await expect(page).toHaveURL(/serials|series/i)
+      await homePage.expectUrlChangedFrom(homeUrl)
+      await homePage.expectUrlMatches(/serials|series/i)
     },
   )
 
   test.fail(
-    'кнопка "Посмотреть всё" должна вести на полный каталог (Баг: не реализовано)',
+    'кнопка "Посмотреть всё" должна вести на полный каталог (BUG: не реализовано)',
     async ({ page }) => {
-      const homePage = new HomePage(page)
+      const homePage = createHomePage(page)
 
       await homePage.goto()
-      const initialUrl = page.url()
+      const initialUrl = homePage.url()
 
       await homePage.clickViewAllLink()
 
-      await expect(page).not.toHaveURL(initialUrl)
+      await homePage.expectUrlChangedFrom(initialUrl)
     },
   )
 })

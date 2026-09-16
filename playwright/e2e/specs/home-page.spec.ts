@@ -1,9 +1,9 @@
 import { test } from '@playwright/test'
-import { HomePage } from '../pages/HomePage'
+import { createHomePage } from '../pages/homePage'
 
 test.describe('Главная страница', () => {
   test('отображает hero-блок и каталог с жанрами', async ({ page }) => {
-    const homePage = new HomePage(page)
+    const homePage = createHomePage(page)
 
     await homePage.goto()
 

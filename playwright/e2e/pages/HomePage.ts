@@ -1,55 +1,63 @@
-import type { Locator, Page } from '@playwright/test'
+import type { Page } from '@playwright/test'
 import { expect } from '@playwright/test'
 
-export class HomePage {
-  readonly page: Page
+/**
+ * Главная страница
+ */
+export function createHomePage(page: Page) {
+  const heroHeading = page.getByRole('heading', {
+    name: /Самые сочные премьеры кино/i,
+  })
+  const heroCtaButton = page.getByRole('button', {
+    name: 'Смотреть бесплатно',
+  })
+  const searchLink = page.getByRole('link', { name: 'Поиск' })
+  const seriesLink = page.getByRole('link', { name: 'Сериалы' })
+  const viewAllLink = page.getByRole('link', { name: 'Посмотреть всё' })
 
-  readonly heroHeading: Locator
-  readonly heroCtaButton: Locator
-  readonly searchLink: Locator
-  readonly seriesLink: Locator
-  readonly viewAllLink: Locator
+  const genreHeading = (genre: string) => page.getByText(genre, { exact: true })
 
-  constructor(page: Page) {
-    this.page = page
+  return {
+    heroHeading,
+    heroCtaButton,
+    searchLink,
+    seriesLink,
+    viewAllLink,
+    genreHeading,
 
-    this.heroHeading = page.getByRole('heading', {
-      name: /Самые сочные премьеры кино/i,
-    })
-    this.heroCtaButton = page.getByRole('button', {
-      name: 'Смотреть бесплатно',
-    })
-    this.searchLink = page.getByRole('link', { name: 'Поиск' })
-    this.seriesLink = page.getByRole('link', { name: 'Сериалы' })
-    this.viewAllLink = page.getByRole('link', { name: 'Посмотреть всё' })
-  }
+    goto: async () => {
+      await page.goto('/')
+    },
 
-  async goto() {
-    await this.page.goto('/')
-  }
+    url: () => page.url(),
 
-  genreHeading(genre: string): Locator {
-    return this.page.getByText(genre, { exact: true })
-  }
+    expectHeroVisible: async () => {
+      await expect(heroHeading).toBeVisible()
+      await expect(heroCtaButton).toBeVisible()
+    },
 
-  async expectHeroVisible() {
-    await expect(this.heroHeading).toBeVisible()
-    await expect(this.heroCtaButton).toBeVisible()
-  }
+    expectGenreVisible: async (genre: string) => {
+      await expect(genreHeading(genre)).toBeVisible()
+    },
 
-  async expectGenreVisible(genre: string) {
-    await expect(this.genreHeading(genre)).toBeVisible()
-  }
+    expectUrlChangedFrom: async (previousUrl: string) => {
+      await expect(page).not.toHaveURL(previousUrl)
+    },
 
-  async openSearch() {
-    await this.searchLink.click()
-  }
+    expectUrlMatches: async (pattern: RegExp) => {
+      await expect(page).toHaveURL(pattern)
+    },
 
-  async clickSeriesLink() {
-    await this.seriesLink.click()
-  }
+    openSearch: async () => {
+      await searchLink.click()
+    },
 
-  async clickViewAllLink() {
-    await this.viewAllLink.click()
+    clickSeriesLink: async () => {
+      await seriesLink.click()
+    },
+
+    clickViewAllLink: async () => {
+      await viewAllLink.click()
+    },
   }
 }
