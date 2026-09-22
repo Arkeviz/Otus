@@ -1,5 +1,5 @@
 import { test } from '@playwright/test'
-import { createHomePage } from '../pages/homePage'
+import { createHomePage } from '../pages/HomePage'
 
 /**
  * Эти два теста фиксируют известные баги:

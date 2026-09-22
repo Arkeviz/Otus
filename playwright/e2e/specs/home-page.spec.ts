@@ -1,5 +1,5 @@
 import { test } from '@playwright/test'
-import { createHomePage } from '../pages/homePage'
+import { createHomePage } from '../pages/HomePage'
 
 test.describe('Главная страница', () => {
   test('отображает hero-блок и каталог с жанрами', async ({ page }) => {

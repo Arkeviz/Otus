@@ -1,6 +1,6 @@
 import { test } from '@playwright/test'
-import { createHomePage } from '../pages/homePage'
-import { createSearchWidget } from '../pages/searchWidget'
+import { createHomePage } from '../pages/HomePage'
+import { createSearchWidget } from '../pages/SearchWidget'
 
 test.describe('Поиск', () => {
   test('открытие поиска без ввода текста показывает блок "Часто ищут"', async ({
